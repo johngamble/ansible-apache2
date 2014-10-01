@@ -14,7 +14,7 @@
 #     ip: '*'
 #     port: 80
 #     state: present
-#     add_webroot: no
+#     create_default_folders: no
 #     template: path/to/template.j2
 #     rules: []
 #     aliases: []
@@ -30,6 +30,10 @@
 #     append: ''
 #
 
+# The user apache runs as
+apache2_run_user: www-data
+# The group apache runs as
+apache2_run_group: www-data
 # ports to listen to
 apache2_ports: [80]
 # ssl ports to listen to
@@ -54,3 +58,13 @@ apache2_server_tokens: Prod
 apache2_server_signiture: 'Off'
 # set to one of:  On | Off | extended
 apache2_trace_enable: 'Off'
+# set to the name of the web root folder - will only be created if vhost setting create_default_folders is set to yes
+apache2_vhost_web_root_folder: 'htdocs'
+# the place for ssl certificates to be stored for vhosts
+apache2_vhost_ssl_folder: 'ssl'
+# if the vhost config sets symlink_logs to yes, then the following folder will be created and the error and access logs will be symlinkedwithin it. It will be created regardless.
+apache2_vhost_log_folder: 'log'
+# a place for the website/application to store temporary files, such as php session files
+apache2_vhost_tmp_folder: 'tmp'
+# default additional folders for all vhosts - will only be created if vhost setting create_default_folders is set to yes
+apache2_vhost_additional_folders: []

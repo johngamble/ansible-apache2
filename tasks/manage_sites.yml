@@ -1,15 +1,38 @@
 ---
 
-- name: Creating webroots
-  file: >
-    dest=/var/www/{{ item.id }}/htdocs
-    state=directory
-  when: item.add_webroot is defined and item.add_webroot == true
+- name: Creating default vhost folders
+  file: dest=/var/www/{{ item[0].id }}/{{ item[1] }} state=directory owner={{ apache2_run_user }} group={{ apache2_run_group }}
+  when: (item[0].add_webroot is defined and item[0].add_webroot == true) or (item[0].create_default_folders is defined and item[0].create_default_folders == true)
+  with_nested: 
+    - apache2_sites
+    - [ "{{ apache2_vhost_ssl_folder }}", "{{ apache2_vhost_tmp_folder }}", "{{ apache2_vhost_web_root_folder }}" ]
+  tags:
+    - web
+    - apache2-php
+    - manage
+
+- name: Creating additional vhost folders
+  file: dest=/var/www/{{ item[0].id }}/{{ item[1] }} state=directory owner={{ apache2_run_user }} group={{ apache2_run_group }}
+  when: (item[0].add_webroot is defined and item[0].add_webroot == true) or (item[0].create_default_folders is defined and item[0].create_default_folders == true)
+  with_nested: 
+    - apache2_sites
+    - apache2_vhost_additional_folders
+  tags:
+    - web
+    - apache2-php
+    - manage
+
+- name: Create log folders
+  file: dest=/var/log/apache2/{{ item.id }} state=directory owner={{ apache2_run_user }} group={{ apache2_run_group }}
   with_items: apache2_sites
   tags:
     - web
     - apache2-php
     - manage
+
+- name: Symlink log folder
+  file: path=/var/www/{{ item.id }}/log src=/var/log/apache2/{{ item.id }} state=link owner={{ apache2_run_user }} group={{ apache2_run_group }}
+  with_items: apache2_sites
 
 # site
 - name: Creating sites

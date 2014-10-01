@@ -1,5 +1,4 @@
   ServerName {{ item.name }}
-  DocumentRoot /var/www/{{ item.id }}/htdocs
   {% for value in item.aliases|default([]) %}
   ServerAlias {{ value }}
   {% endfor %}
@@ -12,7 +11,8 @@
 
   # --- directories -----------------------------------------------------------
 
-  <Directory /var/www/{{ item.id }}/htdocs>
+  DocumentRoot /var/www/{{ item.id }}/{{ apache2_vhost_web_root_folder }}
+  <Directory /var/www/{{ item.id }}/{{ apache2_vhost_web_root_folder }}>
     AllowOverride All
     Options FollowSymLinks
     Require all granted
@@ -28,8 +28,8 @@
   # --- logging ---------------------------------------------------------------
 
   LogLevel warn
-  ErrorLog  /var/log/apache2/error-{{ item.id }}.log
-  CustomLog /var/log/apache2/access-{{ item.id }}.log combined
+  ErrorLog  /var/log/apache2/{{ item.id }}/error.log
+  CustomLog /var/log/apache2/{{ item.id }}/access.log combined
 
   {% if item.append is defined %}
 
@@ -37,4 +37,3 @@
 
   {{ item.append }}
   {% endif %}
-
